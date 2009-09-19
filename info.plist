@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>name</key>
+	<string>Fictional Work</string>
+	<key>ordering</key>
+	<array>
+		<string>5AAD5982-9EAF-441D-8F28-74A609947DE5</string>
+		<string>CDF96549-4172-49B2-96ED-1FDADCC097F8</string>
+	</array>
+	<key>uuid</key>
+	<string>2CCF80E2-3564-46F2-9946-28DBE8748014</string>
+</dict>
+</plist>

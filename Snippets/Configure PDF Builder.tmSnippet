@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>---
+# Set margins below.  These are in PDF points (72 per inch).
+top_margin: ${1:72}
+left_margin: ${2:72}
+right_margin: ${3:72}
+bottom_margin: ${4:72}
+# Set font, size, and line spacing below.
+font: ${5:Courier}
+font_size: ${6:10}
+spacing: ${7:15}
+</string>
+	<key>name</key>
+	<string>Configure PDF Builder</string>
+	<key>uuid</key>
+	<string>CDF96549-4172-49B2-96ED-1FDADCC097F8</string>
+</dict>
+</plist>

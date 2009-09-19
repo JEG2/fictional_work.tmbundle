@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>beforeRunningCommand</key>
+	<string>nop</string>
+	<key>command</key>
+	<string>#!/usr/bin/env ruby -KU
+
+require "pathname"
+require "fileutils"
+require "yaml"
+require "erb"
+
+require "#{ENV['TM_SUPPORT_PATH']}/lib/textmate"
+require "#{ENV['TM_SUPPORT_PATH']}/lib/web_preview"
+
+require "rubygems"
+require "prawn"
+require "prawn/format"
+
+# Figure out paths, title, and user's name
+PROJ_DIR            = Pathname.new(ENV["TM_PROJECT_DIRECTORY"])
+CHAPTERS_DIR        = PROJ_DIR + "chapters"
+PDFS_DIR            = PROJ_DIR + "pdfs"
+FILE                = PDFS_DIR + "#{Time.now.strftime('%Y-%m-%d-%H-%M-%S')}.pdf"
+TITLE               = PROJ_DIR.basename.to_s
+USER                = `dscl . read /Users/$USER realname`.
+                      sub(/\A\S*realname:\s*/, "")
+# Configure options
+options             = (yaml = PROJ_DIR + "config" + "pdf.yaml").exist? ?
+                        YAML.load(yaml.read) : { }
+margins             = { :top_margin    =&gt; options.fetch("top_margin",    72),
+                        :left_margin   =&gt; options.fetch("left_margin",   72),
+                        :right_margin  =&gt; options.fetch("right_margin",  72),
+                        :bottom_margin =&gt; options.fetch("bottom_margin", 72) }
+font_size           = {:size =&gt; options.fetch("font_size", 10)}
+font_size[:spacing] = options.fetch("spacing", font_size[:size] * 1.5)
+header_font_size    = { :align   =&gt; :center,
+                        :size    =&gt; font_size[:size]    * 2,
+                        :spacing =&gt; font_size[:spacing] * 2 }
+
+# Build the PDF
+html_header("Fictional PDF Builder")
+puts "&lt;ol&gt;"
+Prawn::Document.generate(FILE, :skip_page_creation =&gt; true) do
+  start_new_page(margins.merge(:top_margin =&gt; 360))
+  font(options.fetch("font", "Courier"))
+  text("&lt;b&gt;#{TITLE}&lt;/b&gt;&lt;br/&gt;by #{USER}", header_font_size)
+  CHAPTERS_DIR.each_entry do |chapter|
+    if (chapter = CHAPTERS_DIR + chapter).file?
+      puts "&lt;li&gt;Processing #{chapter.basename}&lt;/li&gt;"
+      start_new_page(margins)
+      text( "&lt;b&gt;#{chapter.basename('.txt').sub(/\A\d+\s+/, '')}&lt;/b&gt;",
+            header_font_size )
+      text( chapter.read.gsub("\n", "&lt;br/&gt;"),
+            font_size.merge(:align =&gt; :justify) )
+    end
+  end
+end
+puts "&lt;/ol&gt;"
+FileUtils.ln_sf(FILE, PDFS_DIR + "#{TITLE}.pdf")
+
+# Report success and finish up
+html_safe_path = ERB::Util.h(FILE.realpath).gsub("'", "&amp;#39;")
+puts %Q{&lt;p&gt;Done:  &lt;a href="javascript: }                          +
+     %Q{TextMate.system('open \\'#{html_safe_path}\\'', null);"&gt;} +
+     %Q{open PDF&lt;/a&gt;.&lt;/p&gt;}
+html_footer
+TextMate.rescan_project
+</string>
+	<key>input</key>
+	<string>none</string>
+	<key>name</key>
+	<string>Build Fictional PDF</string>
+	<key>output</key>
+	<string>showAsHTML</string>
+	<key>uuid</key>
+	<string>5AAD5982-9EAF-441D-8F28-74A609947DE5</string>
+</dict>
+</plist>
